@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evolution of Language AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body class="post-page">
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand" aria-label="Brand name">
+          <img src="assets/IMG_20180211_121516.jpg" alt="Krishna Prem Manglani" class="brand-avatar" />
+          <span class="brand-name">Krishna Prem Manglani</span>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="index.html#home">Home</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#posts">Posts</a>
+          <a href="index.html#experience">Experience</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container post-content-wrap">
+      <article class="post-article">
+        <p class="eyebrow">Language AI</p>
+        <h1>Evolution of Language AI</h1>
+        <p class="post-meta-line">From n-grams to GPT-style language models.</p>
+
+        <p>
+          Statistical natural language processing began with a simple but powerful idea: model language by
+          estimating probabilities over sequences of words. Early systems were built on counts, context, and
+          short-range dependencies. These methods made text understanding and generation tractable at a time
+          when neural approaches were still in their infancy.
+        </p>
+
+        <p>
+          The trajectory is revealing. N-gram models learned the probability of a token conditioned on a short
+          preceding window. Deep recurrent models pushed this further by learning richer latent
+          dependencies over time. Transformers then changed the field by making attention the central mechanism,
+          allowing a model to compare many positions in parallel and capture long-range context more effectively.
+        </p>
+
+        <p class="pipeline-line">
+          N-gram → Deep RNNs → Transformers → Foundation models (BERT, GPT-3) →
+          Frontier models (GPT-4, Claude 3.5, Gemini 1.5) → Next-frontier (reasoning + retrieval + agents)
+        </p>
+
+        <h2>1. N-gram models</h2>
+        <p>
+          An n-gram model approximates the probability of a word using only the previous
+          <em>n − 1</em> words (the Markov assumption). Instead of conditioning on the entire history, it looks at a
+          short sliding window, which makes estimation tractable from raw counts.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">Sliding window: a trigram model predicts the next word from the previous two.</p>
+          <svg viewBox="0 0 720 170" width="100%" height="auto" role="img" aria-label="N-gram sliding window over tokens">
+            <rect x="0" y="0" width="720" height="170" fill="#fffdfb"/>
+            <g font-family="Inter, sans-serif" font-size="16" text-anchor="middle">
+              <g>
+                <rect x="30" y="70" width="90" height="46" rx="10" fill="#f6efe8" stroke="#8a5f46" stroke-width="1.5"/>
+                <text x="75" y="98">the</text>
+                <rect x="140" y="70" width="90" height="46" rx="10" fill="#efe0d2" stroke="#8a5f46" stroke-width="2"/>
+                <text x="185" y="98">cat</text>
+                <rect x="250" y="70" width="90" height="46" rx="10" fill="#efe0d2" stroke="#8a5f46" stroke-width="2"/>
+                <text x="295" y="98">sat</text>
+                <rect x="360" y="70" width="90" height="46" rx="10" fill="#4f7e6a" fill-opacity="0.18" stroke="#4f7e6a" stroke-width="2.5"/>
+                <text x="405" y="98">on</text>
+                <rect x="470" y="70" width="110" height="46" rx="10" fill="#fffdfb" stroke="#5d534f" stroke-width="1.5" stroke-dasharray="5 5"/>
+                <text x="525" y="98" fill="#4f7e6a" font-weight="700">? (predict)</text>
+              </g>
+              <path d="M140 62 L340 62" stroke="#8a5f46" stroke-width="2"/>
+              <path d="M140 58 L140 66 M340 58 L340 66" stroke="#8a5f46" stroke-width="2"/>
+              <text x="240" y="48" font-size="13" fill="#8a5f46">context (n−1 = 2 words)</text>
+              <path d="M340 90 C420 40, 430 40, 470 78" stroke="#4f7e6a" stroke-width="2" fill="none" marker-end="url(#arrHead)"/>
+              <defs>
+                <marker id="arrHead" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+                  <path d="M0,0 L7,3 L0,6 Z" fill="#4f7e6a"/>
+                </marker>
+              </defs>
+            </g>
+          </svg>
+        </div>
+
+        <p>By the chain rule with the Markov assumption, the sequence probability factorizes as:</p>
+        $$P(w_1, w_2, \dots, w_T) = \prod_{i=1}^{T} P\!\left(w_i \mid w_{i-n+1}, \dots, w_{i-1}\right)$$
+        <p>and each term is estimated by maximum likelihood (relative counts, usually with smoothing):</p>
+        $$P\!\left(w_i \mid w_{i-n+1}^{\,i-1}\right) = \frac{\text{count}(w_{i-n+1}, \dots, w_i)}{\text{count}(w_{i-n+1}, \dots, w_{i-1})}$$
+
+        <h2>2. Deep RNN models</h2>
+        <p>
+          Recurrent neural networks replace hand-counted probabilities with a learned <strong>hidden state</strong>
+          that is updated at every step. The same weights are applied across time, letting the network carry
+          information forward. LSTMs and GRUs add gates to preserve long-range signal and stabilize training.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">An unrolled RNN: the hidden state h flows left to right, carrying context.</p>
+          <svg viewBox="0 0 720 250" width="100%" height="auto" role="img" aria-label="Unrolled recurrent neural network">
+            <rect x="0" y="0" width="720" height="250" fill="#fffdfb"/>
+            <defs>
+              <marker id="rnnArr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#5d534f"/>
+              </marker>
+            </defs>
+            <g font-family="Inter, sans-serif" font-size="15" text-anchor="middle">
+              <rect x="120" y="95" width="70" height="60" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="155" y="130">h₁</text>
+              <rect x="325" y="95" width="70" height="60" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="360" y="130">h₂</text>
+              <rect x="530" y="95" width="70" height="60" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="565" y="130">h₃</text>
+
+              <path d="M190 125 L323 125" stroke="#5d534f" stroke-width="2" marker-end="url(#rnnArr)"/>
+              <path d="M395 125 L528 125" stroke="#5d534f" stroke-width="2" marker-end="url(#rnnArr)"/>
+
+              <text x="155" y="215" fill="#4f7e6a">x₁</text>
+              <text x="360" y="215" fill="#4f7e6a">x₂</text>
+              <text x="565" y="215" fill="#4f7e6a">x₃</text>
+              <path d="M155 200 L155 158" stroke="#4f7e6a" stroke-width="2" marker-end="url(#rnnArr)"/>
+              <path d="M360 200 L360 158" stroke="#4f7e6a" stroke-width="2" marker-end="url(#rnnArr)"/>
+              <path d="M565 200 L565 158" stroke="#4f7e6a" stroke-width="2" marker-end="url(#rnnArr)"/>
+
+              <text x="155" y="45" fill="#7e695d">ŷ₁</text>
+              <text x="360" y="45" fill="#7e695d">ŷ₂</text>
+              <text x="565" y="45" fill="#7e695d">ŷ₃</text>
+              <path d="M155 92 L155 52" stroke="#7e695d" stroke-width="2" marker-end="url(#rnnArr)"/>
+              <path d="M360 92 L360 52" stroke="#7e695d" stroke-width="2" marker-end="url(#rnnArr)"/>
+              <path d="M565 92 L565 52" stroke="#7e695d" stroke-width="2" marker-end="url(#rnnArr)"/>
+            </g>
+          </svg>
+        </div>
+
+        <p>The recurrence and output at each step are:</p>
+        $$h_t = \tanh\!\left(W_h h_{t-1} + W_x x_t + b\right), \qquad \hat{y}_t = \text{softmax}\!\left(W_y h_t\right)$$
+
+        <h2>3. Transformer models</h2>
+        <p>
+          Transformers drop recurrence entirely and use <strong>self-attention</strong>: every token can directly
+          attend to every other token in the sequence. This removes the long-path bottleneck of RNNs and enables
+          massively parallel training. Each token forms a query, and matches against keys to produce a weighted sum
+          of values.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">Self-attention: the query token attends to all tokens with learned weights.</p>
+          <svg viewBox="0 0 720 220" width="100%" height="auto" role="img" aria-label="Transformer self-attention connections">
+            <rect x="0" y="0" width="720" height="220" fill="#fffdfb"/>
+            <g font-family="Inter, sans-serif" font-size="14" text-anchor="middle">
+              <g fill="#f6efe8" stroke="#8a5f46" stroke-width="1.5">
+                <rect x="60" y="150" width="80" height="40" rx="8"/>
+                <rect x="180" y="150" width="80" height="40" rx="8"/>
+                <rect x="300" y="150" width="80" height="40" rx="8"/>
+                <rect x="420" y="150" width="80" height="40" rx="8"/>
+              </g>
+              <rect x="540" y="150" width="110" height="40" rx="8" fill="#4f7e6a" fill-opacity="0.18" stroke="#4f7e6a" stroke-width="2.5"/>
+              <g fill="#1d1b1a">
+                <text x="100" y="175">The</text>
+                <text x="220" y="175">movie</text>
+                <text x="340" y="175">was</text>
+                <text x="460" y="175">not</text>
+                <text x="595" y="175" fill="#4f7e6a" font-weight="700">good ←</text>
+              </g>
+              <g stroke="#4f7e6a" fill="none" stroke-width="1.8" opacity="0.8">
+                <path d="M580 148 C420 60, 200 60, 100 146"/>
+                <path d="M580 148 C480 70, 300 70, 220 146"/>
+                <path d="M580 148 C520 80, 400 80, 340 146"/>
+                <path d="M580 148 C560 100, 500 100, 460 146"/>
+              </g>
+              <text x="360" y="40" font-size="13" fill="#4f7e6a">query “good” attends to all previous tokens</text>
+            </g>
+          </svg>
+        </div>
+
+        <p>Scaled dot-product attention combines queries \(Q\), keys \(K\), and values \(V\):</p>
+        $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{Q K^\top}{\sqrt{d_k}}\right) V$$
+
+        <h2>4. GPT models: pretraining and instruction fine-tuning</h2>
+        <p>
+          GPT-style models are decoder-only transformers trained to predict the next token. Training happens in
+          stages: massive <strong>self-supervised pretraining</strong> on raw text, followed by
+          <strong>instruction fine-tuning</strong> on curated task demonstrations, and often
+          <strong>RLHF</strong> (reinforcement learning from human feedback) to align outputs with human
+          preferences.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">The GPT training pipeline, from raw text to an aligned assistant.</p>
+          <svg viewBox="0 0 720 160" width="100%" height="auto" role="img" aria-label="GPT training pipeline">
+            <rect x="0" y="0" width="720" height="160" fill="#fffdfb"/>
+            <defs>
+              <marker id="gptArr" markerWidth="12" markerHeight="12" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#8a5f46"/>
+              </marker>
+            </defs>
+            <g font-family="Inter, sans-serif" font-size="12.5" text-anchor="middle">
+              <rect x="20" y="55" width="120" height="52" rx="10" fill="#f6efe8" stroke="#5d534f" stroke-width="1.5"/>
+              <text x="80" y="78">Massive text</text><text x="80" y="94">corpus</text>
+              <rect x="175" y="55" width="130" height="52" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="240" y="78">Pretraining</text><text x="240" y="94">(next token)</text>
+              <rect x="340" y="55" width="140" height="52" rx="10" fill="#4f7e6a" fill-opacity="0.15" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="410" y="78">Instruction</text><text x="410" y="94">fine-tuning</text>
+              <rect x="515" y="55" width="90" height="52" rx="10" fill="#7e695d" fill-opacity="0.15" stroke="#7e695d" stroke-width="2"/>
+              <text x="560" y="78">RLHF /</text><text x="560" y="94">alignment</text>
+              <rect x="635" y="55" width="70" height="52" rx="10" fill="#4f7e6a" fill-opacity="0.25" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="670" y="78">Aligned</text><text x="670" y="94">model</text>
+              <g stroke="#8a5f46" stroke-width="2" marker-end="url(#gptArr)">
+                <path d="M140 81 L172 81"/>
+                <path d="M305 81 L337 81"/>
+                <path d="M480 81 L512 81"/>
+                <path d="M605 81 L632 81"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <p>Pretraining minimizes the autoregressive negative log-likelihood over the corpus:</p>
+        $$\mathcal{L}_{\text{LM}} = -\sum_{t=1}^{T} \log P_\theta\!\left(w_t \mid w_{\lt t}\right)$$
+
+        <h4>The role of the prompt</h4>
+        <p>
+          Because the model only ever predicts the next token given preceding tokens, the
+          <strong>prompt</strong> — the text placed before the model’s turn — <em>is</em> the conditioning context
+          \(w_{\lt t}\) that steers the whole generation. A pretrained model continues text; instruction tuning is
+          what teaches it to treat the prompt as a <em>task to follow</em> rather than a passage to autocomplete.
+        </p>
+        <p>
+          This is why <strong>instruction fine-tuning data must itself be prompt-shaped</strong>. Each training and
+          validation example is a pair of (prompt, ideal response): an instruction, optional input, and the desired
+          output. The model is trained to maximize the likelihood of the response <em>conditioned on the prompt</em>,
+          so the validation set has to contain realistic prompts too — otherwise you measure autocompletion, not
+          instruction-following. Formally the objective shifts from \(P_\theta(w_t \mid w_{\lt t})\) to a
+          conditional \(P_\theta(\text{response} \mid \text{prompt})\).
+        </p>
+        <p>
+          For reliable answers, an effective prompt is usually built from a few distinct components:
+        </p>
+        <ul>
+          <li><strong>Role / system context</strong> — who the model should act as and any global rules.</li>
+          <li><strong>Instruction</strong> — the specific task, stated clearly and unambiguously.</li>
+          <li><strong>Input / context</strong> — the data, documents, or retrieved evidence to work from.</li>
+          <li><strong>Examples (few-shot)</strong> — one or more demonstrations of the desired input→output mapping.</li>
+          <li><strong>Output format</strong> — the expected structure (JSON, steps, length, tone) so the answer is usable.</li>
+          <li><strong>Constraints</strong> — what to avoid, edge-case handling, and stopping conditions.</li>
+        </ul>
+        <p>
+          Matching the structure of these components between fine-tuning data and inference is what makes prompting
+          predictable: the model has learned the shape of a good prompt→response pair and generalizes to new ones.
+        </p>
+
+        <h4>When the model hallucinates</h4>
+        <p>
+          A <strong>hallucination</strong> is when the model produces text that is fluent and confident but
+          factually wrong, unsupported, or fabricated — invented citations, made-up numbers, or claims that were
+          never in its training data or the prompt. It happens because the model is optimized to produce
+          <em>probable-sounding</em> next tokens, not verified truth: it has no built-in notion of “I don’t know,”
+          so it fills gaps with the most plausible continuation.
+        </p>
+        <p>Hallucinations become more likely when:</p>
+        <ul>
+          <li><strong>Knowledge is missing or stale</strong> — the question is outside the training data or about events after the cutoff, so there is no grounded answer to recall.</li>
+          <li><strong>The prompt is vague or underspecified</strong> — with little context, the model guesses intent and invents specifics to fill the blanks.</li>
+          <li><strong>Rare or long-tail facts</strong> — obscure names, exact dates, statistics, or citations are weakly represented, so the model interpolates a plausible-looking value.</li>
+          <li><strong>Long, multi-step reasoning</strong> — small errors compound over many tokens, and the model may confidently continue down a wrong path.</li>
+          <li><strong>Leading or false-premise prompts</strong> — if the prompt assumes something untrue, the model tends to go along with it rather than challenge it.</li>
+          <li><strong>High decoding randomness</strong> — a high sampling temperature increases variety but also the chance of drifting away from grounded facts.</li>
+        </ul>
+        <p>
+          This limitation is exactly what motivates the retrieval and agent techniques in the next section: by
+          grounding the model in retrieved evidence (RAG) and letting it verify with tools, we reduce the space in
+          which it has to guess.
+        </p>
+
+        <h2>5. Retrieval and Agents</h2>
+        <p>
+          Bigger models alone hit limits: they hallucinate, lack up-to-date or private knowledge, and struggle with
+          long multi-step tasks. The next frontier augments the model with external memory (retrieval) and the
+          ability to act (tools and agents).
+        </p>
+
+        <h3>Vector databases</h3>
+        <p>
+          A <strong>vector database</strong> stores text (documents, chunks, facts) as high-dimensional
+          <em>embeddings</em> — numeric vectors where semantically similar items are close together. At query time,
+          the query is embedded and the database returns the nearest vectors, enabling <em>semantic search</em>
+          rather than keyword matching.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">Documents are embedded into a vector space; the query retrieves its nearest neighbours.</p>
+          <svg viewBox="0 0 720 260" width="100%" height="auto" role="img" aria-label="Vector database nearest neighbour search">
+            <rect x="0" y="0" width="720" height="260" fill="#fffdfb"/>
+            <g stroke="#5d534f" stroke-width="1.5">
+              <line x1="60" y1="230" x2="60" y2="30"/>
+              <line x1="60" y1="230" x2="660" y2="230"/>
+            </g>
+            <g fill="#8a5f46">
+              <circle cx="180" cy="120" r="6"/><circle cx="150" cy="170" r="6"/><circle cx="230" cy="90" r="6"/>
+              <circle cx="470" cy="80" r="6"/><circle cx="520" cy="140" r="6"/><circle cx="560" cy="90" r="6"/>
+              <circle cx="330" cy="200" r="6"/><circle cx="400" cy="170" r="6"/>
+            </g>
+            <circle cx="200" cy="130" r="55" fill="#4f7e6a" fill-opacity="0.12" stroke="#4f7e6a" stroke-width="2" stroke-dasharray="5 5"/>
+            <circle cx="200" cy="130" r="8" fill="#4f7e6a"/>
+            <g font-family="Inter, sans-serif" font-size="13" fill="#1d1b1a">
+              <text x="215" y="128" fill="#4f7e6a" font-weight="700">query</text>
+              <text x="250" y="150" fill="#4f7e6a">nearest neighbours</text>
+              <text x="300" y="252">embedding dimension 1</text>
+              <text x="30" y="130" transform="rotate(-90 30 130)">embedding dimension 2</text>
+            </g>
+          </svg>
+        </div>
+
+        <p>Similarity is typically measured by cosine similarity between embeddings \(a\) and \(b\):</p>
+        $$\text{sim}(a, b) = \frac{a \cdot b}{\lVert a \rVert \, \lVert b \rVert}$$
+
+        <h3>Retrieval-Augmented Generation (RAG)</h3>
+        <p>
+          <strong>RAG</strong> connects a language model to a vector database. The user query retrieves the most
+          relevant chunks, which are injected into the prompt as context. The model then answers <em>grounded</em>
+          in that retrieved evidence — reducing hallucination and allowing fresh or private knowledge without
+          retraining.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">RAG pipeline: retrieve relevant context, then generate a grounded answer.</p>
+          <svg viewBox="0 0 720 180" width="100%" height="auto" role="img" aria-label="Retrieval augmented generation pipeline">
+            <rect x="0" y="0" width="720" height="180" fill="#fffdfb"/>
+            <defs>
+              <marker id="ragArr" markerWidth="12" markerHeight="12" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#8a5f46"/>
+              </marker>
+            </defs>
+            <g font-family="Inter, sans-serif" font-size="12.5" text-anchor="middle">
+              <rect x="15" y="65" width="90" height="50" rx="10" fill="#f6efe8" stroke="#5d534f" stroke-width="1.5"/>
+              <text x="60" y="94">Query</text>
+              <rect x="135" y="65" width="110" height="50" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="190" y="86">Embed &amp;</text><text x="190" y="102">search</text>
+              <rect x="275" y="65" width="110" height="50" rx="10" fill="#4f7e6a" fill-opacity="0.15" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="330" y="86">Vector DB</text><text x="330" y="102">(top-k)</text>
+              <rect x="415" y="65" width="120" height="50" rx="10" fill="#f6efe8" stroke="#5d534f" stroke-width="1.5"/>
+              <text x="475" y="86">Context +</text><text x="475" y="102">query</text>
+              <rect x="565" y="65" width="70" height="50" rx="10" fill="#7e695d" fill-opacity="0.15" stroke="#7e695d" stroke-width="2"/>
+              <text x="600" y="94">LLM</text>
+              <rect x="655" y="65" width="55" height="50" rx="10" fill="#4f7e6a" fill-opacity="0.25" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="682" y="94">Answer</text>
+              <g stroke="#8a5f46" stroke-width="2" marker-end="url(#ragArr)">
+                <path d="M105 90 L133 90"/>
+                <path d="M245 90 L273 90"/>
+                <path d="M385 90 L413 90"/>
+                <path d="M535 90 L563 90"/>
+                <path d="M635 90 L653 90"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <p>Conceptually, RAG marginalizes over the retrieved documents \(d\):</p>
+        $$P(y \mid x) \approx \sum_{d \,\in\, \text{top-}k} P(y \mid x, d)\, P(d \mid x)$$
+
+        <h3>Agentic systems</h3>
+        <p>
+          An <strong>agentic system</strong> lets the model do more than answer in one shot: it can plan, call
+          <em>tools</em> (search, code, APIs, databases), observe results, and iterate toward a goal. The model
+          becomes a controller in a loop rather than a single function call. Three common design paradigms:
+        </p>
+
+        <p>
+          <strong>How the prompt selects the next action.</strong> At every step the agent builds a prompt that lists
+          the goal, the history so far, and the set of <em>available tools/actions</em>. The model then scores
+          possible continuations and, because generation is probabilistic, effectively ranks the candidate actions by
+          likelihood \(P_\theta(\text{action} \mid \text{prompt})\). The highest-scoring, well-formed candidate (for
+          example a specific tool call with arguments) is chosen and executed. So the prompt does double duty: it
+          both <em>constrains</em> what actions are legal by enumerating them, and <em>guides</em> the selection by
+          providing the context that makes one action more probable than the rest. Its result (the observation) is
+          appended to the prompt, and the cycle repeats — each action choice conditioned on an ever-growing context.
+        </p>
+
+        <h4>Tool-call loop (exploratory)</h4>
+        <p>
+          The simplest agent: the model decides whether to call a tool, sees the result, and repeats until it can
+          answer. It is flexible and good for open-ended <em>exploration</em>, but can wander without a clear plan.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">Tool-call loop: the model calls a tool, observes the result, and repeats.</p>
+          <svg viewBox="0 0 720 170" width="100%" height="auto" role="img" aria-label="Tool call loop agent">
+            <rect x="0" y="0" width="720" height="170" fill="#fffdfb"/>
+            <defs>
+              <marker id="loopArr" markerWidth="12" markerHeight="12" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#8a5f46"/>
+              </marker>
+            </defs>
+            <g font-family="Inter, sans-serif" font-size="13" text-anchor="middle">
+              <rect x="250" y="30" width="120" height="50" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="310" y="60">LLM</text>
+              <rect x="250" y="115" width="120" height="45" rx="10" fill="#4f7e6a" fill-opacity="0.15" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="310" y="142">Tool</text>
+              <path d="M345 82 C400 95, 400 105, 360 116" stroke="#8a5f46" stroke-width="2" fill="none" marker-end="url(#loopArr)"/>
+              <text x="420" y="102" fill="#8a5f46">call</text>
+              <path d="M270 116 C230 105, 230 95, 285 82" stroke="#4f7e6a" stroke-width="2" fill="none" marker-end="url(#loopArr)"/>
+              <text x="195" y="102" fill="#4f7e6a">observe</text>
+              <rect x="470" y="45" width="110" height="45" rx="10" fill="#4f7e6a" fill-opacity="0.25" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="525" y="72">Answer</text>
+              <path d="M370 55 L468 60" stroke="#8a5f46" stroke-width="2" fill="none" marker-end="url(#loopArr)" stroke-dasharray="5 5"/>
+              <text x="420" y="45" font-size="11" fill="#5d534f">when done</text>
+            </g>
+          </svg>
+        </div>
+
+        <h4>ReAct (Reasoning + Acting)</h4>
+        <p>
+          ReAct interleaves explicit <strong>reasoning traces</strong> with actions: the model writes a
+          <em>Thought</em>, takes an <em>Action</em>, reads an <em>Observation</em>, and loops. Making the reasoning
+          visible improves <em>interpretability</em> and helps the agent recover from mistakes.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">ReAct cycle: Thought → Action → Observation, repeated until the answer.</p>
+          <svg viewBox="0 0 720 170" width="100%" height="auto" role="img" aria-label="ReAct reasoning and acting loop">
+            <rect x="0" y="0" width="720" height="170" fill="#fffdfb"/>
+            <defs>
+              <marker id="reactArr" markerWidth="12" markerHeight="12" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#8a5f46"/>
+              </marker>
+            </defs>
+            <g font-family="Inter, sans-serif" font-size="13" text-anchor="middle">
+              <rect x="30" y="60" width="120" height="50" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="90" y="90">Thought</text>
+              <rect x="220" y="60" width="120" height="50" rx="10" fill="#4f7e6a" fill-opacity="0.15" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="280" y="90">Action</text>
+              <rect x="410" y="60" width="130" height="50" rx="10" fill="#7e695d" fill-opacity="0.15" stroke="#7e695d" stroke-width="2"/>
+              <text x="475" y="90">Observation</text>
+              <rect x="610" y="60" width="80" height="50" rx="10" fill="#4f7e6a" fill-opacity="0.25" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="650" y="90">Answer</text>
+              <g stroke="#8a5f46" stroke-width="2" marker-end="url(#reactArr)">
+                <path d="M150 85 L218 85"/>
+                <path d="M340 85 L408 85"/>
+                <path d="M540 85 L608 85" stroke-dasharray="5 5"/>
+              </g>
+              <path d="M475 112 C400 155, 170 155, 90 113" stroke="#7e695d" stroke-width="2" fill="none" marker-end="url(#reactArr)"/>
+              <text x="285" y="150" font-size="11" fill="#7e695d">loop back with new context</text>
+            </g>
+          </svg>
+        </div>
+
+        <h4>Plan-and-Execute</h4>
+        <p>
+          For complex, compositional, and largely <strong>deterministic</strong> tasks, a
+          <em>planner</em> first decomposes the goal into an ordered list of steps, and an <em>executor</em> carries
+          them out (often calling tools). Separating planning from execution gives structure, predictability, and
+          easier verification.
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">Plan-and-Execute: a planner emits ordered steps that an executor runs in turn.</p>
+          <svg viewBox="0 0 720 210" width="100%" height="auto" role="img" aria-label="Plan and execute agent">
+            <rect x="0" y="0" width="720" height="210" fill="#fffdfb"/>
+            <defs>
+              <marker id="planArr" markerWidth="12" markerHeight="12" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#8a5f46"/>
+              </marker>
+            </defs>
+            <g font-family="Inter, sans-serif" font-size="13" text-anchor="middle">
+              <rect x="30" y="80" width="120" height="55" rx="10" fill="#8a5f46" fill-opacity="0.15" stroke="#8a5f46" stroke-width="2"/>
+              <text x="90" y="113">Planner</text>
+              <rect x="270" y="20" width="150" height="42" rx="8" fill="#f6efe8" stroke="#5d534f" stroke-width="1.5"/>
+              <text x="345" y="46">Step 1</text>
+              <rect x="270" y="84" width="150" height="42" rx="8" fill="#f6efe8" stroke="#5d534f" stroke-width="1.5"/>
+              <text x="345" y="110">Step 2</text>
+              <rect x="270" y="148" width="150" height="42" rx="8" fill="#f6efe8" stroke="#5d534f" stroke-width="1.5"/>
+              <text x="345" y="174">Step 3</text>
+              <rect x="500" y="80" width="120" height="55" rx="10" fill="#4f7e6a" fill-opacity="0.15" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="560" y="113">Executor</text>
+              <rect x="640" y="82" width="60" height="52" rx="10" fill="#4f7e6a" fill-opacity="0.25" stroke="#4f7e6a" stroke-width="2"/>
+              <text x="670" y="112">Done</text>
+              <g stroke="#8a5f46" stroke-width="2" marker-end="url(#planArr)">
+                <path d="M150 100 L266 41"/>
+                <path d="M150 107 L266 105"/>
+                <path d="M150 114 L266 169"/>
+                <path d="M420 41 L500 100"/>
+                <path d="M420 105 L498 107"/>
+                <path d="M420 169 L500 114"/>
+                <path d="M620 107 L638 107"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <p>
+          These paradigms are not mutually exclusive — real systems mix them: a Plan-and-Execute agent may run a
+          ReAct loop inside a single step, and both rely on tool calls and RAG for grounding. The through-line of the
+          whole story is abstraction: from counts, to learned sequences, to attention, and finally to reasoning
+          systems that retrieve knowledge and act in the world.
+        </p>
+
+        <h2>6. Guardrails for practical LLMs and agents</h2>
+        <p>
+          Because a raw model can hallucinate, leak data, or be manipulated — and an agent can additionally take
+          <em>actions</em> in the world — production software wraps both in <strong>guardrails</strong>: checks and
+          controls that make behaviour safe, predictable, and auditable. The model and the agent are treated as
+          untrusted components, and the surrounding system enforces the rules.
+        </p>
+
+        <h4>Model-level guardrails</h4>
+        <p>These constrain what a single model call is allowed to receive and produce:</p>
+        <ul>
+          <li><strong>Input validation &amp; prompt-injection defense</strong> — sanitize and constrain user input, and isolate untrusted content (retrieved docs, tool output) so it cannot override system instructions.</li>
+          <li><strong>Output validation &amp; schema enforcement</strong> — require structured output (e.g. JSON), validate it against a schema, and reject or retry on malformed responses before they reach downstream code.</li>
+          <li><strong>Grounding &amp; citations</strong> — force answers to be backed by retrieved sources (RAG), and verify claims against those sources to catch fabrication.</li>
+          <li><strong>Content safety &amp; moderation</strong> — filter toxic, unsafe, or policy-violating content on both the input and the output using moderation classifiers.</li>
+          <li><strong>PII &amp; secret protection</strong> — detect and redact personal data and credentials, and prevent the model from echoing sensitive context or training data.</li>
+          <li><strong>Scope &amp; topic limits</strong> — restrict the assistant to its intended domain and refuse out-of-scope or disallowed requests.</li>
+          <li><strong>Uncertainty &amp; fallbacks</strong> — let the model say “I don’t know,” route low-confidence cases to a human, and provide safe default responses.</li>
+        </ul>
+
+        <h4>Agent-level guardrails</h4>
+        <p>Agents act over many steps and call tools, so they need additional controls around the loop:</p>
+        <ul>
+          <li><strong>Tool allowlisting &amp; permissions</strong> — restrict which tools/APIs the agent may call, with least-privilege scopes per task.</li>
+          <li><strong>Action approval for high-risk steps</strong> — require human confirmation before irreversible or sensitive actions (payments, deletes, emails, deploys).</li>
+          <li><strong>Sandboxing &amp; isolation</strong> — run code and tool execution in isolated, resource-limited environments that cannot touch production data directly.</li>
+          <li><strong>Loop &amp; budget limits</strong> — cap iterations, tool calls, tokens, and wall-clock time to stop runaway or looping agents.</li>
+          <li><strong>Plan validation &amp; step checks</strong> — verify each proposed step against policy and preconditions before executing, and re-plan on failure.</li>
+          <li><strong>State &amp; memory hygiene</strong> — prevent untrusted tool output from silently rewriting goals, and keep trusted instructions separate from working memory.</li>
+          <li><strong>Observability &amp; kill switch</strong> — trace every thought, action, and observation, with the ability to pause or abort an agent mid-run.</li>
+        </ul>
+
+        <h4>System-level guardrails</h4>
+        <ul>
+          <li><strong>Rate limiting &amp; cost controls</strong> — cap requests and spend to prevent abuse and runaway usage.</li>
+          <li><strong>Logging, monitoring &amp; evaluation</strong> — record prompts, actions, and outputs; track quality and safety metrics; and continuously test against a regression suite.</li>
+          <li><strong>Access control &amp; audit</strong> — authenticate users, authorize actions, and keep an auditable trail of what the system did and why.</li>
+        </ul>
+        <p>
+          Together these turn a probabilistic text generator into a dependable software component: the model and
+          agent propose, but the guardrails decide what is allowed to happen.
+        </p>
+
+        <h2>7. Foundation, frontier, and next-frontier models</h2>
+        <p>
+          Stepping back from the individual techniques, the models themselves are often grouped less by
+          architecture and more by <strong>scale, capability, and role</strong>. Three overlapping tiers are worth
+          distinguishing.
+        </p>
+
+        <h4>Foundation models</h4>
+        <p>
+          A <strong>foundation model</strong> is a large model pretrained on broad, unlabeled data that can be
+          <em>adapted</em> (via fine-tuning or prompting) to many downstream tasks. The value is in the reusable
+          representations, not a single task. <em>Examples:</em> BERT, GPT-2/GPT-3, T5, RoBERTa, CLIP, and early
+          open models like LLaMA. In the evolution path, foundation models are the first products of the transformer
+          era — the shift from task-specific training to general pretraining.
+        </p>
+
+        <h4>Frontier models</h4>
+        <p>
+          A <strong>frontier model</strong> is a current, state-of-the-art, general-purpose model at the cutting
+          edge of capability and scale — typically multimodal and heavily aligned. The term also carries a safety
+          connotation (“frontier AI”), because these systems can show emergent, hard-to-predict abilities.
+          <em>Examples:</em> GPT-4 / GPT-4o, Claude 3.5, Gemini 1.5, and Llama 3.1 405B. They sit after foundation
+          models on the path: same architecture lineage, but far larger, instruction-tuned, and RLHF-aligned.
+        </p>
+
+        <h4>Next-frontier models</h4>
+        <p>
+          <strong>Next-frontier models</strong> push beyond one-shot answering toward <em>reasoning, retrieval, and
+          autonomy</em>. They add test-time reasoning (deliberate chain-of-thought trained with RL), long context,
+          native tool use, and agentic loops — the retrieval and agent techniques covered above. <em>Examples:</em>
+          OpenAI o1 / o3 (reasoning models), Claude with computer use, and Gemini 2.0 agentic systems. This is the
+          leading edge of the evolution path.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Foundation</th>
+              <th>Frontier</th>
+              <th>Next-frontier</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Training</td>
+              <td>Self-supervised pretraining on broad data</td>
+              <td>Pretraining + instruction tuning + RLHF at massive scale, multimodal</td>
+              <td>Adds RL for reasoning, tool-use training, long-context and agentic objectives</td>
+            </tr>
+            <tr>
+              <td>Evaluation</td>
+              <td>Transfer benchmarks (GLUE, SuperGLUE), fine-tune then test</td>
+              <td>Broad zero/few-shot suites (MMLU, HumanEval, MATH) + safety red-teaming</td>
+              <td>Agentic / task-completion benchmarks (SWE-bench, GAIA, ARC-AGI), long-horizon success</td>
+            </tr>
+            <tr>
+              <td>Capabilities</td>
+              <td>Reusable representations, transfer learning</td>
+              <td>Strong general reasoning, coding, multimodal understanding</td>
+              <td>Multi-step reasoning, retrieval grounding, tool use, autonomous task execution</td>
+            </tr>
+            <tr>
+              <td>Examples</td>
+              <td>BERT, GPT-3, T5, CLIP, LLaMA</td>
+              <td>GPT-4o, Claude 3.5, Gemini 1.5, Llama 3.1 405B</td>
+              <td>o1 / o3, Claude computer use, Gemini 2.0 agents</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          The tiers are cumulative rather than exclusive: a next-frontier system is still built on a frontier model,
+          which is itself a scaled-up, aligned foundation model. What changes at each tier is how much of the
+          intelligence comes from <em>training the weights</em> versus <em>orchestrating reasoning, retrieval, and
+          actions at run time</em>.
+        </p>
+      </article>
+    </main>
+  </body>
+</html>

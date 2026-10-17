@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hypothesis Testing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="post-page">
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand" aria-label="Brand name">
+          <img src="assets/IMG_20180211_121516.jpg" alt="Krishna Prem Manglani" class="brand-avatar" />
+          <span class="brand-name">Krishna Prem Manglani</span>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="index.html#home">Home</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#posts">Posts</a>
+          <a href="index.html#experience">Experience</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container post-content-wrap">
+      <article class="post-article">
+        <p class="eyebrow">Research Methods</p>
+        <h1>Hypothesis Testing</h1>
+        <p class="post-meta-line">A framework for deciding whether a result is likely real or just noise.</p>
+
+        <p>
+          Hypothesis testing is a foundational method in statistics for checking claims about data. It lets us
+          decide whether an observed pattern is strong enough to support a conclusion, or whether it may be
+          explained by random variability alone.
+        </p>
+
+        <p>
+          The process typically begins by stating two competing hypotheses: a null hypothesis, which usually
+          represents no effect or no difference, and an alternative hypothesis, which represents the effect
+          being investigated. We then ask whether the observed data would be unusually unlikely under the null
+          hypothesis.
+        </p>
+
+        <h2>How the test works</h2>
+        <p>
+          A statistical test summarizes the evidence in a single number, often a test statistic, and compares
+          it against a reference distribution. This produces a p-value: the probability of observing data at
+          least as extreme as the sample if the null hypothesis were true. Lower p-values suggest the data are
+          less compatible with the null hypothesis.
+        </p>
+
+        <p>
+          A useful way to think about the decision rule <em>p-value &lt; 0.05</em> is as a
+          <strong>classifier</strong>. The classifier looks at the observed statistic and labels the result as
+          either <strong>“statistically significant”</strong> or <strong>“not significant.”</strong> Just like any
+          classifier, it can be right or wrong, and its behavior is best understood through the same
+          precision/recall vocabulary.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Decision \ Truth</th>
+              <th>Real effect (H₁ true)</th>
+              <th>No effect (H₀ true)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mark significant</td>
+              <td>True positive (correct)</td>
+              <td>False positive (Type I error)</td>
+            </tr>
+            <tr>
+              <td>Mark not significant</td>
+              <td>False negative (Type II error)</td>
+              <td>True negative (correct)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ul>
+          <li>
+            <strong>Power = recall on the “real effect” class.</strong> It is the chance of marking the result
+            significant <em>given that a real effect exists</em>: P(significant | H₁ true). Higher power means the
+            test reliably catches true effects.
+          </li>
+          <li>
+            <strong>The significance level α is the false-positive rate.</strong> It is the chance of marking the
+            result significant <em>given that there is no real effect</em>: P(significant | H₀ true). Equivalently,
+            if we call recall on the “no effect” class the specificity, then α = 1 − specificity. Setting the
+            threshold at 0.05 caps this false-positive rate at 5%.
+          </li>
+        </ul>
+
+        <p>
+          So choosing a threshold like 0.05 is really choosing an operating point on this classifier: a lower
+          threshold reduces false positives (fewer flukes called significant) but also lowers power (more real
+          effects missed). This is the same precision–recall trade-off that appears throughout machine learning.
+        </p>
+
+        <h2>A worked example: difference of means</h2>
+        <p>
+          Suppose we compare the means of two populations with <strong>different variances</strong> — for example
+          the average spend of users in two product variants. The test statistic is the difference in sample
+          means, and under the null hypothesis this difference is centered at zero. Under the alternative, it is
+          centered at the true effect size. The two figures show distribution of difference between sample means
+          from two groups under H₀ (no effect) and H₁ (real effect).
+        </p>
+
+        <div class="stat-figure">
+          <p class="figure-caption">Figure 1 — Original sample size. The two distributions overlap heavily, so the test has limited power.</p>
+          <svg viewBox="0 0 700 340" width="100%" height="auto" role="img" aria-label="Overlapping null and alternative sampling distributions of the difference in means">
+            <rect x="0" y="0" width="700" height="340" fill="#fffdfb"/>
+            <line x1="60" y1="280" x2="660" y2="280" stroke="#5d534f" stroke-width="2"/>
+
+            <path d="M115 280 C225 280, 225 90, 280 90 C335 90, 335 280, 445 280 Z" fill="#7e695d" fill-opacity="0.18" stroke="#7e695d" stroke-width="2.5"/>
+            <path d="M275 280 C385 280, 385 90, 440 90 C495 90, 495 280, 605 280 Z" fill="#4f7e6a" fill-opacity="0.18" stroke="#4f7e6a" stroke-width="2.5"/>
+
+            <line x1="280" y1="280" x2="280" y2="90" stroke="#7e695d" stroke-width="1.4" stroke-dasharray="5 5"/>
+            <line x1="440" y1="280" x2="440" y2="90" stroke="#4f7e6a" stroke-width="1.4" stroke-dasharray="5 5"/>
+
+            <g font-family="Inter, sans-serif" font-size="15" fill="#1d1b1a">
+              <text x="255" y="300">0</text>
+              <text x="420" y="300">μ (effect)</text>
+              <text x="300" y="330">Difference in sample means</text>
+              <text x="150" y="80" fill="#7e695d" font-weight="700">H₀: no effect</text>
+              <text x="470" y="80" fill="#4f7e6a" font-weight="700">H₁: real effect</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="stat-figure">
+          <p class="figure-caption">Figure 2 — Sample size increased 4×. The standard error halves (SE ∝ 1/√n), so both distributions are squeezed and separate cleanly, raising power.</p>
+          <svg viewBox="0 0 700 340" width="100%" height="auto" role="img" aria-label="Null and alternative sampling distributions with 4x larger sample size, narrower and better separated">
+            <rect x="0" y="0" width="700" height="340" fill="#fffdfb"/>
+            <line x1="60" y1="280" x2="660" y2="280" stroke="#5d534f" stroke-width="2"/>
+
+            <path d="M196 280 C252 280, 252 60, 280 60 C308 60, 308 280, 364 280 Z" fill="#7e695d" fill-opacity="0.18" stroke="#7e695d" stroke-width="2.5"/>
+            <path d="M356 280 C412 280, 412 60, 440 60 C468 60, 468 280, 524 280 Z" fill="#4f7e6a" fill-opacity="0.18" stroke="#4f7e6a" stroke-width="2.5"/>
+
+            <line x1="280" y1="280" x2="280" y2="60" stroke="#7e695d" stroke-width="1.4" stroke-dasharray="5 5"/>
+            <line x1="440" y1="280" x2="440" y2="60" stroke="#4f7e6a" stroke-width="1.4" stroke-dasharray="5 5"/>
+
+            <g font-family="Inter, sans-serif" font-size="15" fill="#1d1b1a">
+              <text x="255" y="300">0</text>
+              <text x="420" y="300">μ (effect)</text>
+              <text x="300" y="330">Difference in sample means</text>
+              <text x="150" y="80" fill="#7e695d" font-weight="700">H₀: no effect</text>
+              <text x="470" y="80" fill="#4f7e6a" font-weight="700">H₁: real effect</text>
+            </g>
+          </svg>
+        </div>
+
+        <p>
+          Stacking the two figures makes the key insight visible: the true effect size μ has not changed, but with
+          4× the data the sampling distributions become much narrower. The overlap between H₀ and H₁ shrinks, which
+          directly increases the <strong>power</strong> (recall) of the test — the same real effect that was hard to
+          detect in Figure 1 is now easily separated from noise in Figure 2.
+        </p>
+
+        <p>
+          A <strong>confidence interval</strong> is the flip side of the same picture. Instead of asking “is the
+          difference far enough from 0?”, it draws a band around the observed difference — typically the estimate
+          ± about two standard errors — that captures the plausible range for the true effect. Its width is set by
+          the same standard error that controls the spread of these curves. In Figure 1 the wide, overlapping
+          distributions correspond to a <strong>wide confidence interval</strong> that still includes 0, so the
+          result is inconclusive. In Figure 2 the squeezed distributions correspond to a <strong>narrow
+          confidence interval</strong> that no longer includes 0. A useful rule of thumb: the result is
+          statistically significant at the 5% level exactly when the 95% confidence interval does not contain 0.
+        </p>
+
+        <p>
+          <strong>Why draw a band at all?</strong> The observed difference is only an <em>estimate</em> from one
+          random sample — draw a different sample and you would get a slightly different number. That sampling
+          variability is exactly the bell curve in the figures, and its spread is the standard error. So a single
+          point estimate is almost never exactly right; the honest thing to report is a <em>range</em> of values
+          that are consistent with the data. We build that range by inverting the test: a candidate value for the
+          true difference is “plausible” if the observed estimate would not be surprising when that value is true —
+          i.e. it falls within about two standard errors. Collecting every such plausible value gives the band. The
+          ± 2×SE width therefore comes directly from the sampling distribution: because roughly 95% of sample
+          estimates land within two standard errors of the truth, an interval of ± 2×SE around the estimate will,
+          over repeated sampling, cover the true difference about 95% of the time.
+        </p>
+
+        <h2>Numerical example: Welch’s t-test</h2>
+        <p>
+          When the two populations have <strong>different variances</strong>, the appropriate test is
+          <strong>Welch’s t-test</strong> (it does not assume equal variances). Suppose we measure average spend in
+          two variants:
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>Group</th><th>Sample size n</th><th>Mean x̄</th><th>Std dev s</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Variant A</td><td>30</td><td>52</td><td>8&nbsp;&nbsp;(s² = 64)</td></tr>
+            <tr><td>Variant B</td><td>40</td><td>48</td><td>12&nbsp;(s² = 144)</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Step 1 — Standard error of the difference:</strong></p>
+        <p>
+          SE = √(s₁²/n₁ + s₂²/n₂) = √(64/30 + 144/40) = √(2.133 + 3.600) = √5.733 = <strong>2.394</strong>
+        </p>
+
+        <p><strong>Step 2 — t statistic:</strong></p>
+        <p>
+          t = (x̄₁ − x̄₂) / SE = (52 − 48) / 2.394 = 4 / 2.394 = <strong>1.671</strong>
+        </p>
+
+        <p><strong>Step 3 — Welch–Satterthwaite degrees of freedom:</strong></p>
+        <p>
+          df = (s₁²/n₁ + s₂²/n₂)² / [ (s₁²/n₁)²/(n₁−1) + (s₂²/n₂)²/(n₂−1) ]
+          = 5.733² / (2.133²/29 + 3.600²/39) = 32.87 / (0.157 + 0.332) ≈ <strong>67</strong>
+        </p>
+
+        <p><strong>Step 4 — Decision:</strong></p>
+        <p>
+          The two-tailed critical value at α = 0.05 with df ≈ 67 is about <strong>±1.996</strong>. Since our
+          t = 1.671 is smaller in magnitude, we <strong>fail to reject the null</strong>. The two-tailed
+          p-value is roughly <strong>0.10</strong> — the observed difference of 4 is not statistically
+          significant at the 5% level, even though it may look meaningful.
+        </p>
+
+        <p><strong>Step 5 — 95% confidence interval for the difference:</strong></p>
+        <p>
+          CI = (x̄₁ − x̄₂) ± t<sub>crit</sub> × SE = 4 ± 1.996 × 2.394 = 4 ± 4.78 =
+          <strong>(−0.78, 8.78)</strong>.
+        </p>
+        <p>
+          <em>Interpretation:</em> if we repeated this experiment many times, about 95% of the intervals
+          computed this way would contain the true mean difference. Because this interval
+          <strong>includes 0</strong>, a “no difference” value is still plausible — which is exactly why the
+          test fails to reject the null. The interval also shows the difference could realistically be anywhere
+          from slightly negative to nearly 9, so the estimate is too imprecise to act on.
+        </p>
+
+        <p><strong>Now increase both sample sizes 4× (n₁ = 120, n₂ = 160), keeping the same means and standard deviations:</strong></p>
+        <p>
+          SE = √(64/120 + 144/160) = √(0.533 + 0.900) = √1.433 = <strong>1.197</strong><br />
+          t = 4 / 1.197 = <strong>3.34</strong>, with df ≈ 275 and critical value ≈ ±1.969.
+        </p>
+        <p>
+          The new <strong>95% confidence interval</strong> is 4 ± 1.969 × 1.197 = 4 ± 2.36 =
+          <strong>(1.64, 6.36)</strong>. <em>Interpretation:</em> this interval <strong>excludes 0</strong>, so a
+          “no difference” value is no longer plausible — consistent with the significant result. Note it is also
+          much <strong>narrower</strong> than the original (−0.78, 8.78): with 4× the data the estimate is far more
+          precise, which is the confidence-interval counterpart of the squeezed distributions in Figure 2.
+        </p>
+        <p>
+          Now t = 3.34 far exceeds 1.97, giving a two-tailed p-value of about <strong>0.001</strong> — the same
+          effect is now <strong>highly significant</strong>. This is exactly the squeezing shown in Figure 2:
+          quadrupling the sample halves the standard error (SE ∝ 1/√n), shrinks the overlap, and turns an
+          undetectable difference into a clear one.
+        </p>
+
+        <p>
+          <strong>What about the Type I error?</strong> It does <em>not</em> change. The Type I error rate is
+          fixed by the chosen threshold (α = 0.05), so it stays at 5% regardless of sample size — we simply use a
+          larger critical value of df but the same 5% tail area. Increasing the sample size does not make false
+          positives more or less likely; it only <strong>reduces the Type II error</strong> (raising power). In
+          Figure 2, both curves narrow, but the H₀ curve still has exactly 5% of its area beyond the critical
+          value. So the benefit of more data is entirely on the recall side: better detection of real effects at
+          the same false-positive rate.
+        </p>
+
+        <h2>Why it matters</h2>
+        <p>
+          Hypothesis testing helps separate signal from noise in decision-making. In scientific work, it allows
+          researchers to assess whether a new treatment effect, model improvement, or observed pattern is likely
+          to be genuine rather than an artifact of randomness. In business and product settings, it helps avoid
+          acting on unstable or short-lived signals.
+        </p>
+
+        <h2>Important limitations</h2>
+        <p>
+          Hypothesis testing is not a guarantee of truth and it does not measure the size of an effect on its
+          own. A result can be statistically significant but small, while an important effect can be missed if
+          the sample is too small or the design is weak. That is why statistical testing is often paired with
+          confidence intervals, effect sizes, and domain context.
+        </p>
+
+        <p>
+          In practice, the best decisions come from combining formal tests with careful measurement, replication,
+          and interpretation. Good inference depends not only on whether a result is surprising, but on whether
+          it is meaningful in the real world.
+        </p>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simpson’s Paradox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="post-page">
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand" aria-label="Brand name">
+          <img src="assets/IMG_20180211_121516.jpg" alt="Krishna Prem Manglani" class="brand-avatar" />
+          <span class="brand-name">Krishna Prem Manglani</span>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="index.html#home">Home</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#posts">Posts</a>
+          <a href="index.html#experience">Experience</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container post-content-wrap">
+      <article class="post-article">
+        <p class="eyebrow">Statistics</p>
+        <h1>Simpson’s Paradox</h1>
+        <p class="post-meta-line">A reverse in trend caused by hidden group structure.</p>
+
+        <p>
+          Simpson’s paradox is a statistical phenomenon in which a trend appears in separate groups of data
+          but reverses or disappears when the groups are combined. It is a classic reminder that aggregated
+          averages can be misleading when the underlying groups differ in size or composition.
+        </p>
+
+        <p>
+          In its simplest form, a comparison between two groups can look favorable in one direction when
+          analyzed within subgroups, yet reverse at the aggregate level. This happens because the subgroup
+          mix changes between the groups being compared. In many applied settings, this is exactly the sort
+          of pitfall that can arise in experiment analysis, medical studies, or business reporting.
+        </p>
+
+        <h2>Why it happens</h2>
+        <p>
+          The main driver is confounding. If one group has a larger share of observations from a subgroup
+          with a systematically different outcome rate, then the aggregate comparison may be dominated by
+          composition rather than by the comparison itself. Once the data are split into more meaningful
+          subpopulations, the original pattern may disappear or reverse.
+        </p>
+
+        <h2>A worked example: two doctors</h2>
+        <p>
+          Suppose we compare two doctors on their surgery success rates. Each treats a mix of
+          <strong>difficult</strong> and <strong>easy</strong> cases, but their case mixes are very different.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Case type</th>
+              <th>Doctor A</th>
+              <th>Doctor B</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Difficult cases</td>
+              <td>6 / 10 = <strong>60%</strong></td>
+              <td>1 / 5 = <strong>20%</strong></td>
+            </tr>
+            <tr>
+              <td>Easy cases</td>
+              <td>10 / 10 = <strong>100%</strong></td>
+              <td>90 / 100 = <strong>90%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          Notice that Doctor A is better in <em>both</em> categories: 60% vs 20% on difficult cases and
+          100% vs 90% on easy cases.
+        </p>
+
+        <h2>Overall success rate</h2>
+        <p>Now combine each doctor’s cases into a single overall rate:</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Total successes</th>
+              <th>Overall rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Doctor A</td>
+              <td>(6 + 10) / (10 + 10) = 16 / 20</td>
+              <td><strong>80.0%</strong></td>
+            </tr>
+            <tr>
+              <td>Doctor B</td>
+              <td>(1 + 90) / (5 + 100) = 91 / 105</td>
+              <td><strong>86.7%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          The paradox appears: by the overall rate, <strong>Doctor B (86.7%) looks more successful than
+          Doctor A (80.0%)</strong> — even though Doctor A was better in every individual category. This
+          happens because Doctor B mostly handled easy cases (100 of 105), which inflates the combined average.
+        </p>
+
+        <h2>Adjusting for case mix</h2>
+        <p>
+          The fair way to compare is to hold the case mix fixed and re-weight each doctor’s category rates.
+          This is called <em>standardization</em>.
+        </p>
+
+        <h3>Using Doctor A’s case mix (50% difficult, 50% easy)</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>Doctor</th><th>Weighted rate</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Doctor A</td>
+              <td>0.5 × 60% + 0.5 × 100%</td>
+              <td><strong>80.0%</strong></td>
+            </tr>
+            <tr>
+              <td>Doctor B</td>
+              <td>0.5 × 20% + 0.5 × 90%</td>
+              <td><strong>55.0%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Under Doctor A’s mix, <strong>Doctor A wins, 80.0% vs 55.0%</strong>.</p>
+
+        <h3>Using Doctor B’s case mix (5/105 difficult, 100/105 easy)</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>Doctor</th><th>Weighted rate</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Doctor A</td>
+              <td>(5/105) × 60% + (100/105) × 100%</td>
+              <td><strong>98.1%</strong></td>
+            </tr>
+            <tr>
+              <td>Doctor B</td>
+              <td>(5/105) × 20% + (100/105) × 90%</td>
+              <td><strong>86.7%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Under Doctor B’s mix, <strong>Doctor A still wins, 98.1% vs 86.7%</strong>.</p>
+
+        <h2>Why it matters</h2>
+        <p>
+          The decision flips depending on how we measure:
+        </p>
+        <ul>
+          <li><strong>Raw overall rates:</strong> Doctor B looks better (86.7% vs 80.0%).</li>
+          <li><strong>Mix-adjusted (either mix):</strong> Doctor A is consistently better.</li>
+        </ul>
+        <p>
+          This is the heart of Simpson’s paradox: an unadjusted aggregate can point to the wrong winner
+          because the two groups face different case mixes. Doctor B’s higher overall number came from
+          treating mostly easy cases, not from being a better doctor. Once we control for difficulty, the
+          true picture — that Doctor A is stronger in every category — is restored.
+        </p>
+
+        <p>
+          In data science and experimentation, this is why we cannot trust aggregate metrics without checking
+          for group-level structure. It is especially important in A/B testing, observational studies, and
+          fairness analyses, where a hidden confounder can reverse the apparent story. A good analyst always
+          asks: are we comparing apples to apples, or is the result driven by composition?
+        </p>
+      </article>
+    </main>
+  </body>
+</html>
